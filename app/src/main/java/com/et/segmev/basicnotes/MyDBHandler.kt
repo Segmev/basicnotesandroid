@@ -43,7 +43,7 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
         values.put(COLUMN_TITLE, note.title)
         values.put(COLUMN_DESCRIPTION, note.info)
         val p0 = this.writableDatabase
-        p0.insert(TABLE_NOTES, null, values)
+        p0.insertWithOnConflict(TABLE_NOTES, null, values, SQLiteDatabase.CONFLICT_IGNORE)
         p0.close()
     }
 
@@ -63,10 +63,12 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
         return notes
     }
 
-    fun findNote(noteID: Int): Note? {
-        Log.d(TAG, "find $noteID")
+    fun findNote(word: String, onlyInTitles: Boolean): Note? {
+        Log.d(TAG, "find $word")
 
-        val query = "SELECT * from $TABLE_NOTES WHERE $COLUMN_ID = \"$noteID\" "
+        var query = "SELECT * from $TABLE_NOTES WHERE $COLUMN_TITLE LIKE \"%$word%\" "
+        if (!onlyInTitles)
+            query += " OR $COLUMN_DESCRIPTION LIKE \"%$word%\" "
         val p0 = this.writableDatabase
         val cursor = p0.rawQuery(query, null)
         var note: Note? = null
