@@ -1,9 +1,9 @@
 package com.et.segmev.basicnotes
 
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
-import android.text.BoringLayout
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -16,6 +16,7 @@ class EditNoteActivity : AppCompatActivity() {
     val dbHandler : MyDBHandler = MyDBHandler(this, null, null, 1)
     var isNewNote = true
     val note: Note = Note("", "")
+    var backPressedOnce = false
 
     companion object {
         const val EXTRA_NOTE_TITLE = "note_title"
@@ -63,6 +64,21 @@ class EditNoteActivity : AppCompatActivity() {
         val menuItem = menu?.add(Menu.NONE, 1000, Menu.NONE, R.string.done)
         MenuItemCompat.setShowAsAction(menuItem, MenuItem.SHOW_AS_ACTION_IF_ROOM)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onBackPressed() {
+        if (backPressedOnce || (noteTitle.text.isEmpty() && noteInfo.text.isEmpty())) {
+            super.onBackPressed()
+            finish()
+            return
+        }
+        backPressedOnce = true
+        Toast.makeText(
+                this@EditNoteActivity,
+                "All changes will be lost. Press again to go back.",
+                Toast.LENGTH_SHORT
+        ).show()
+        Handler().postDelayed({ backPressedOnce = false }, 3000)
     }
 
     private fun setResult(): Boolean {
