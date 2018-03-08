@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
@@ -16,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     val ADD_NOTE_CODE = 1
     val dbHandler : MyDBHandler = MyDBHandler(this, null, null, 1)
     var adapter: CustomNotesAdapter? = null
-    val deletedNotes: ArrayList<Note> = ArrayList()
+    var lastDeletedNote: Note? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +34,7 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("isNewNote", true)
             startActivityForResult(intent, ADD_NOTE_CODE)
         }
+
         val swipeController: ItemTouchHelper.Callback = object : ItemTouchHelper.Callback() {
             override fun getMovementFlags(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?): Int {
                 return makeMovementFlags(0, ItemTouchHelper.LEFT)
@@ -42,14 +45,41 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
-                val note: Note =  adapter?.returnNote(viewHolder?.adapterPosition!!)!!
+                lastDeletedNote = adapter?.returnNote(viewHolder?.adapterPosition!!)!!
                 Toast.makeText(this@MainActivity, "Note deleted.", Toast.LENGTH_LONG).show()
-                dbHandler.deleteNote(note.id)
+                dbHandler.deleteNote(lastDeletedNote?.id!!)
                 adapter?.updateData(dbHandler.findAllNotes())
+                invalidateOptionsMenu()
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeController)
         itemTouchHelper.attachToRecyclerView(rv)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val menuItem = menu.add(Menu.NONE, 42, Menu.NONE, "Undo note delete")
+        menuItem.isEnabled = false
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menu.getItem(0).isEnabled = lastDeletedNote != null
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            42 -> {
+                if (lastDeletedNote != null)
+                    dbHandler.addNote(lastDeletedNote!!)
+                lastDeletedNote = null
+                adapter?.updateData(dbHandler.findAllNotes())
+                Toast.makeText(this@MainActivity, "Note restored", Toast.LENGTH_LONG)
+                invalidateOptionsMenu()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onResume() {
