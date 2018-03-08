@@ -13,7 +13,7 @@ import java.util.*
 class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.CursorFactory?,
                   version: Int) : SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
     companion object {
-        private val DATABASE_VERSION = 3
+        private val DATABASE_VERSION = 4
         private val DATABASE_NAME = "notesDB.db"
         val TABLE_NOTES = "notes"
         val COLUMN_ID = "_id"
@@ -31,6 +31,10 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
                         + ")"
                 )
         p0.execSQL(CREATE_NOTES_TABLE)
+        val values = ContentValues()
+        values.put(COLUMN_TITLE, "A simple note card")
+        values.put(COLUMN_DESCRIPTION, "Any note added will appear here. You can click on a note to edit it, and swipe a note to remove it.")
+        p0.insertWithOnConflict(TABLE_NOTES, null, values, SQLiteDatabase.CONFLICT_IGNORE)
     }
 
     override fun onUpgrade(p0: SQLiteDatabase, p1: Int, p2: Int) {
@@ -39,7 +43,7 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
     }
 
     fun addNote(note: Note) {
-        Log.d(TAG, "add note " + note.title)
+        Log.i(TAG, "add note " + note.title)
         val values = ContentValues()
         values.put(COLUMN_TITLE, note.title)
         values.put(COLUMN_DESCRIPTION, note.info)
@@ -49,7 +53,7 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
     }
 
     fun findAllNotes(): ArrayList<Note> {
-        Log.d(TAG, "find all notes")
+        Log.i(TAG, "find all notes")
         val p0 = this.writableDatabase
         val cursor = p0.rawQuery("SELECT * from $TABLE_NOTES", null)
         val notes = ArrayList<Note>()
@@ -65,7 +69,7 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
     }
 
     fun findFilteredNotes(word: String, everywhere: Boolean): ArrayList<Note> {
-        Log.d(TAG, "find only notes with $word")
+        Log.i(TAG, "find only notes with $word")
 
         var query = "SELECT * from $TABLE_NOTES WHERE $COLUMN_TITLE LIKE \"%$word%\" "
         if (everywhere)
@@ -87,7 +91,7 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
     }
 
     fun getAllTitles(): Array<String?> {
-        Log.d(TAG, "find all titles")
+        Log.i(TAG, "find all titles")
         val p0 = this.writableDatabase
         val cursor = p0.rawQuery("SELECT * from $TABLE_NOTES", null)
         val titles = ArrayList<String>()
@@ -101,12 +105,11 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
         p0.close()
         val titlesArray = arrayOfNulls<String>(titles.size)
         titles.toArray(titlesArray)
-        Log.d(TAG, Arrays.toString(titlesArray))
         return titlesArray
     }
 
     fun findNote(word: String, onlyInTitles: Boolean): Note? {
-        Log.d(TAG, "find $word")
+        Log.i(TAG, "find $word")
 
         var query = "SELECT * from $TABLE_NOTES WHERE $COLUMN_TITLE LIKE \"%$word%\" "
         if (!onlyInTitles)
@@ -124,7 +127,7 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
     }
 
     fun updateNote(note: Note) {
-        Log.d(TAG, "update " + note.id)
+        Log.i(TAG, "update " + note.id)
         val values = ContentValues()
         values.put(COLUMN_TITLE, note.title)
         values.put(COLUMN_DESCRIPTION, note.info)
@@ -134,7 +137,7 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
     }
 
     fun deleteNote(noteID: Int) {
-        Log.d(TAG, "delete $noteID")
+        Log.i(TAG, "delete $noteID")
         val query = "SELECT * from $TABLE_NOTES WHERE $COLUMN_ID = \"$noteID\" "
         val p0 = this.writableDatabase
         val cursor = p0.rawQuery(query, null)
