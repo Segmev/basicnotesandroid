@@ -3,6 +3,7 @@ package com.et.segmev.basicnotes
 import android.os.Bundle
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
+import android.text.BoringLayout
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -48,8 +49,10 @@ class EditNoteActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (!noteTitle.text.isEmpty()) {
-            setResult()
-            finish()
+            if (setResult())
+                finish()
+            else
+                Toast.makeText(this@EditNoteActivity, "A note already exist with this title.", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(this@EditNoteActivity, "You must write a title.", Toast.LENGTH_SHORT).show()
         }
@@ -62,7 +65,7 @@ class EditNoteActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun setResult() {
+    private fun setResult(): Boolean {
         note.title = noteTitle.text.toString()
         note.info = noteInfo.text.toString()
         if (note.title.isEmpty() && note.info.isEmpty()) {
@@ -71,11 +74,14 @@ class EditNoteActivity : AppCompatActivity() {
         }
         else {
             if (isNewNote) {
+                if (dbHandler.findNote(note.title) != null)
+                    return false
                 dbHandler.addNote(note)
             }
             else {
                 dbHandler.updateNote(note)
             }
         }
+        return true
     }
 }

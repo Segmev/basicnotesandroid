@@ -119,12 +119,10 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
         return titlesArray
     }
 
-    fun findNote(word: String, onlyInTitles: Boolean): Note? {
+    fun findNote(word: String): Note? {
         Log.i(TAG, "find $word")
 
-        var query = "SELECT * from $TABLE_NOTES WHERE $COLUMN_TITLE LIKE \"%$word%\" "
-        if (!onlyInTitles)
-            query += " OR $COLUMN_DESCRIPTION LIKE \"%$word%\" "
+        var query = "SELECT * from $TABLE_NOTES WHERE $COLUMN_TITLE = \"$word\" "
         val p0 = this.writableDatabase
         val cursor = p0.rawQuery(query, null)
         var note: Note? = null
