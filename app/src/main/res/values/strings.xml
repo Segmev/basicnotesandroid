@@ -8,4 +8,7 @@
     <string name="filter_notes_by_words">Filter notes by words</string>
     <string name="in_titles_only">In titles only</string>
     <string name="everywhere">Everywhere</string>
+    <string name="most_recent_first_menuitem">Most recent first</string>
+    <string name="undo_menuitem">Undo note delete</string>
+    <string name="lest_recent_first_menuitem">Older notes first</string>
 </resources>
