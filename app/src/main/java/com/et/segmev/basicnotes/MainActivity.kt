@@ -1,8 +1,8 @@
 package com.et.segmev.basicnotes
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                     dbHandler.addNote(lastDeletedNote!!)
                 lastDeletedNote = null
                 adapter?.updateData(dbHandler.findAllNotes(orderByAsc), lastDeletedNote)
-                Toast.makeText(this@MainActivity, "Note restored", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@MainActivity, getString(R.string.note_restored_toast), Toast.LENGTH_LONG).show()
                 invalidateOptionsMenu()
             }
             84 -> {

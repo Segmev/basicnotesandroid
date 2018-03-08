@@ -1,6 +1,7 @@
 package com.et.segmev.basicnotes
 
 import android.content.Intent
+import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +12,19 @@ import android.widget.TextView
  * Created by segmev on 05/03/2018.
  */
 
-class CustomNotesAdapter(private val notesList: ArrayList<Note>): RecyclerView.Adapter<CustomNotesAdapter.ViewHolder>() {
+class CustomNotesAdapter(private val notesList: ArrayList<Note>):
+        RecyclerView.Adapter<CustomNotesAdapter.ViewHolder>() {
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        holder?.txtTitle?.text = notesList[position].title
-        holder?.txtInformation?.text = notesList[position].info
+    override fun onBindViewHolder(holder: ViewHolder?, pos: Int) {
+        holder?.txtTitle?.text = notesList[pos].title
+        holder?.txtInformation?.text = notesList[pos].info
+        val card = holder?.itemView?.findViewById<CardView>(R.id.card)
+        val primaryCardColors = card?.resources?.obtainTypedArray(R.array.card_primary_colors)
+        val lightCardColors = card?.resources?.obtainTypedArray(R.array.card_light_colors)
+        card?.setCardBackgroundColor(primaryCardColors?.getColor((pos) % primaryCardColors.length(), 0)!!)
+        holder?.txtTitle?.setTextColor(lightCardColors?.getColor((pos) % lightCardColors.length(), 0)!!)
+        primaryCardColors?.recycle()
+        lightCardColors?.recycle()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {

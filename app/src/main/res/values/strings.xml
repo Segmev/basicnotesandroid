@@ -11,4 +11,5 @@
     <string name="most_recent_first_menuitem">Most recent first</string>
     <string name="undo_menuitem">Undo note delete</string>
     <string name="lest_recent_first_menuitem">Older notes first</string>
+    <string name="note_restored_toast">Note restored</string>
 </resources>
