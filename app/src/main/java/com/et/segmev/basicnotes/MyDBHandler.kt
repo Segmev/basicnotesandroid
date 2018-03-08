@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import java.util.*
 
 /**
  * Created by segmev on 07/03/2018.
@@ -48,7 +49,7 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
     }
 
     fun findAllNotes(): ArrayList<Note> {
-        Log.d(TAG, "find all ")
+        Log.d(TAG, "find all notes")
         val p0 = this.writableDatabase
         val cursor = p0.rawQuery("SELECT * from $TABLE_NOTES", null)
         val notes = ArrayList<Note>()
@@ -61,6 +62,47 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
         cursor.close()
         p0.close()
         return notes
+    }
+
+    fun findFilteredNotes(word: String, onlyInTitles: Boolean): ArrayList<Note> {
+        Log.d(TAG, "find only notes with $word")
+
+        var query = "SELECT * from $TABLE_NOTES WHERE $COLUMN_TITLE LIKE \"%$word%\" "
+        if (!onlyInTitles)
+            query += " OR $COLUMN_DESCRIPTION LIKE \"%$word%\" "
+
+        val p0 = this.writableDatabase
+        val cursor = p0.rawQuery(query, null)
+
+        val notes = ArrayList<Note>()
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast) {
+                notes.add(Note(cursor.getString(1), cursor.getString(2), Integer.parseInt(cursor.getString(0))))
+                cursor.moveToNext()
+            }
+        }
+        cursor.close()
+        p0.close()
+        return notes
+    }
+
+    fun getAllTitles(): Array<String?> {
+        Log.d(TAG, "find all titles")
+        val p0 = this.writableDatabase
+        val cursor = p0.rawQuery("SELECT * from $TABLE_NOTES", null)
+        val titles = ArrayList<String>()
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast) {
+                titles.add(cursor.getString(1))
+                cursor.moveToNext()
+            }
+        }
+        cursor.close()
+        p0.close()
+        val titlesArray = arrayOfNulls<String>(titles.size)
+        titles.toArray(titlesArray)
+        Log.d(TAG, Arrays.toString(titlesArray))
+        return titlesArray
     }
 
     fun findNote(word: String, onlyInTitles: Boolean): Note? {

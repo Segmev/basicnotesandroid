@@ -3,4 +3,7 @@
     <string name="note_information">Note information</string>
     <string name="noteTitle">Title</string>
     <string name="done">Done</string>
+    <string name="title">Title</string>
+    <string name="information">Information</string>
+    <string name="filter_notes_by_words">Filter notes by words</string>
 </resources>

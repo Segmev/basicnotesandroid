@@ -13,14 +13,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                 android:id="@+id/txtTitle"
-                android:text="Title"
+                android:text="@string/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <TextView
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                android:text="Information"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                android:text="@string/information"
                 android:id="@+id/txtInformation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

@@ -7,9 +7,12 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
@@ -49,11 +52,21 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "Note deleted.", Toast.LENGTH_LONG).show()
                 dbHandler.deleteNote(lastDeletedNote?.id!!)
                 adapter?.updateData(dbHandler.findAllNotes())
+                autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
                 invalidateOptionsMenu()
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeController)
         itemTouchHelper.attachToRecyclerView(rv)
+
+        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
+        autoCompleteTextView.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                adapter?.updateData(dbHandler.findFilteredNotes(p0?.toString()!!, true))
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -68,27 +81,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
+        when (item.itemId) {
             42 -> {
                 if (lastDeletedNote != null)
                     dbHandler.addNote(lastDeletedNote!!)
                 lastDeletedNote = null
                 adapter?.updateData(dbHandler.findAllNotes())
-                Toast.makeText(this@MainActivity, "Note restored", Toast.LENGTH_LONG)
+                Toast.makeText(this@MainActivity, "Note restored", Toast.LENGTH_LONG).show()
                 invalidateOptionsMenu()
-                true
             }
-            else -> super.onOptionsItemSelected(item)
         }
+        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
         super.onResume()
+        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
         adapter?.updateData(dbHandler.findAllNotes())
     }
 
     override fun onRestart() {
         super.onRestart()
+        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
         adapter?.updateData(dbHandler.findAllNotes())
     }
 }
