@@ -13,10 +13,10 @@ import kotlinx.android.synthetic.main.edit_note_layout.*
  * Created by segmev on 07/03/2018.
  */
 class EditNoteActivity : AppCompatActivity() {
-    val dbHandler : MyDBHandler = MyDBHandler(this, null, null, 1)
-    var isNewNote = true
-    val note: Note = Note("", "")
-    var backPressedOnce = false
+    private val dbHandler : MyDBHandler = MyDBHandler(this, null, null, 1)
+    private var isNewNote = true
+    private val note: Note = Note("", "")
+    private var backPressedOnce = false
 
     companion object {
         const val EXTRA_NOTE_TITLE = "note_title"

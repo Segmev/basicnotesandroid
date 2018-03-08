@@ -16,7 +16,7 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    val ADD_NOTE_CODE = 1
+    private val ADD_NOTE_CODE = 1
     val dbHandler : MyDBHandler = MyDBHandler(this, null, null, 1)
     var adapter: CustomNotesAdapter? = null
     var lastDeletedNote: Note? = null
