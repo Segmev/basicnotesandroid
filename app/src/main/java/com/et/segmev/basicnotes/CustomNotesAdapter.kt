@@ -35,8 +35,15 @@ class CustomNotesAdapter(private val notesList: ArrayList<Note>): RecyclerView.A
         return notesList.size
     }
 
-    fun updateData(updatedNotesList: ArrayList<Note>) {
+    fun updateData(updatedNotesList: ArrayList<Note>, removedNote: Note?) {
         this.notesList.clear()
+        if (removedNote != null)
+            for (note in updatedNotesList) {
+                if (note.id == removedNote.id) {
+                    updatedNotesList.remove(note)
+                    break
+                }
+            }
         this.notesList.addAll(updatedNotesList)
         notifyDataSetChanged()
     }

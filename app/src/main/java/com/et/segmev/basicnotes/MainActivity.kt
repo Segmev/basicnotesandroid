@@ -47,10 +47,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
+                if (lastDeletedNote != null)
+                    dbHandler.deleteNote(lastDeletedNote?.id!!)
                 lastDeletedNote = adapter?.returnNote(viewHolder?.adapterPosition!!)!!
                 Toast.makeText(this@MainActivity, "Note deleted.", Toast.LENGTH_LONG).show()
-                dbHandler.deleteNote(lastDeletedNote?.id!!)
-                adapter?.updateData(dbHandler.findAllNotes(orderByAsc))
+                adapter?.updateData(dbHandler.findAllNotes(orderByAsc), lastDeletedNote)
                 autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
                 invalidateOptionsMenu()
             }
@@ -63,11 +64,11 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(p0: Editable?) {}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                adapter?.updateData(dbHandler.findFilteredNotes(p0?.toString()!!, toggleSearch.isChecked, orderByAsc))
+                adapter?.updateData(dbHandler.findFilteredNotes(p0?.toString()!!, toggleSearch.isChecked, orderByAsc), lastDeletedNote)
             }
         })
         toggleSearch.setOnCheckedChangeListener {
-            _, isChecked -> adapter?.updateData(dbHandler.findFilteredNotes(autoCompleteTextView.text.toString(), isChecked, orderByAsc))
+            _, isChecked -> adapter?.updateData(dbHandler.findFilteredNotes(autoCompleteTextView.text.toString(), isChecked, orderByAsc), lastDeletedNote)
         }
     }
 
@@ -90,14 +91,14 @@ class MainActivity : AppCompatActivity() {
                 if (lastDeletedNote != null)
                     dbHandler.addNote(lastDeletedNote!!)
                 lastDeletedNote = null
-                adapter?.updateData(dbHandler.findAllNotes(orderByAsc))
+                adapter?.updateData(dbHandler.findAllNotes(orderByAsc), lastDeletedNote)
                 Toast.makeText(this@MainActivity, "Note restored", Toast.LENGTH_LONG).show()
                 invalidateOptionsMenu()
             }
             84 -> {
                 orderByAsc = !orderByAsc
                 invalidateOptionsMenu()
-                adapter?.updateData(dbHandler.findAllNotes(orderByAsc))
+                adapter?.updateData(dbHandler.findAllNotes(orderByAsc), lastDeletedNote)
             }
         }
         autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
@@ -107,12 +108,18 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
-        adapter?.updateData(dbHandler.findAllNotes(orderByAsc))
+        adapter?.updateData(dbHandler.findAllNotes(orderByAsc), lastDeletedNote)
     }
 
     override fun onRestart() {
         super.onRestart()
         autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
-        adapter?.updateData(dbHandler.findAllNotes(orderByAsc))
+        adapter?.updateData(dbHandler.findAllNotes(orderByAsc), lastDeletedNote)
+    }
+
+    override fun onStop() {
+        if (lastDeletedNote != null)
+            dbHandler.deleteNote(lastDeletedNote?.id!!)
+        super.onStop()
     }
 }
