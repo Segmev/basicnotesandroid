@@ -6,4 +6,6 @@
     <string name="title">Title</string>
     <string name="information">Information</string>
     <string name="filter_notes_by_words">Filter notes by words</string>
+    <string name="in_titles_only">In titles only</string>
+    <string name="everywhere">Everywhere</string>
 </resources>

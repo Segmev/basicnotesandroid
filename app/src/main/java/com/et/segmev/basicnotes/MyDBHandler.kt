@@ -64,11 +64,11 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
         return notes
     }
 
-    fun findFilteredNotes(word: String, onlyInTitles: Boolean): ArrayList<Note> {
+    fun findFilteredNotes(word: String, everywhere: Boolean): ArrayList<Note> {
         Log.d(TAG, "find only notes with $word")
 
         var query = "SELECT * from $TABLE_NOTES WHERE $COLUMN_TITLE LIKE \"%$word%\" "
-        if (!onlyInTitles)
+        if (everywhere)
             query += " OR $COLUMN_DESCRIPTION LIKE \"%$word%\" "
 
         val p0 = this.writableDatabase

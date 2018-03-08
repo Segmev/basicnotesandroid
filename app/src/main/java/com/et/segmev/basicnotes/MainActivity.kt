@@ -64,9 +64,12 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(p0: Editable?) {}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                adapter?.updateData(dbHandler.findFilteredNotes(p0?.toString()!!, true))
+                adapter?.updateData(dbHandler.findFilteredNotes(p0?.toString()!!, toggleSearch.isChecked))
             }
         })
+        toggleSearch.setOnCheckedChangeListener {
+            _, isChecked -> adapter?.updateData(dbHandler.findFilteredNotes(autoCompleteTextView.text.toString(), isChecked))
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
