@@ -8,11 +8,8 @@ import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * Created by segmev on 07/03/2018.
- */
-class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.CursorFactory?,
-                  version: Int) : SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
+class MyDBHandler(context: Context, factory: SQLiteDatabase.CursorFactory?)
+    : SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
     companion object {
         private val DATABASE_VERSION = 5
         private val DATABASE_NAME = "notesDB.db"
@@ -122,9 +119,8 @@ class MyDBHandler(context: Context, name: String?, factory: SQLiteDatabase.Curso
     fun findNote(word: String): Note? {
         Log.i(TAG, "find $word")
 
-        var query = "SELECT * from $TABLE_NOTES WHERE $COLUMN_TITLE = \"$word\" "
         val p0 = this.writableDatabase
-        val cursor = p0.rawQuery(query, null)
+        val cursor = p0.rawQuery("SELECT * from $TABLE_NOTES WHERE $COLUMN_TITLE = \"$word\" ", null)
         var note: Note? = null
 
         if (cursor.moveToFirst()) {

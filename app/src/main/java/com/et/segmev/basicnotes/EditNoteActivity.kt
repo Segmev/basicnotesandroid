@@ -2,18 +2,14 @@ package com.et.segmev.basicnotes
 
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import kotlinx.android.synthetic.main.edit_note_layout.*
 
-/**
- * Created by segmev on 07/03/2018.
- */
 class EditNoteActivity : AppCompatActivity() {
-    private val dbHandler : MyDBHandler = MyDBHandler(this, null, null, 1)
+    private val dbHandler: MyDBHandler = MyDBHandler(this, null)
     private var isNewNote = true
     private val note: Note = Note("", "")
     private var backPressedOnce = false
@@ -26,6 +22,7 @@ class EditNoteActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edit_note_layout)
+        supportActionBar?.title = getString(R.string.editnote_title)
 
         if (savedInstanceState == null) {
             isNewNote = intent.extras.getBoolean("isNewNote", true)
@@ -62,7 +59,7 @@ class EditNoteActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val menuItem = menu?.add(Menu.NONE, 1000, Menu.NONE, R.string.done)
-        MenuItemCompat.setShowAsAction(menuItem, MenuItem.SHOW_AS_ACTION_IF_ROOM)
+        menuItem?.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
         return super.onCreateOptionsMenu(menu)
     }
 

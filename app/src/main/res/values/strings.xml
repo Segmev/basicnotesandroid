@@ -12,4 +12,6 @@
     <string name="undo_menuitem">Undo note delete</string>
     <string name="lest_recent_first_menuitem">Older notes first</string>
     <string name="note_restored_toast">Note restored</string>
+    <string name="editnote_title">Note information</string>
+    <string name="mainactivity_title">Notes List</string>
 </resources>

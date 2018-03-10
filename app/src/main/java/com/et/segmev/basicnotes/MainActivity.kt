@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private val ADD_NOTE_CODE = 1
-    val dbHandler : MyDBHandler = MyDBHandler(this, null, null, 1)
+    val dbHandler: MyDBHandler = MyDBHandler(this, null)
     var adapter: CustomNotesAdapter? = null
     var lastDeletedNote: Note? = null
     var orderByAsc = false
@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        supportActionBar?.title = getString(R.string.mainactivity_title)
 
         val rv = findViewById<RecyclerView>(R.id.recyclerView)
         rv.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
