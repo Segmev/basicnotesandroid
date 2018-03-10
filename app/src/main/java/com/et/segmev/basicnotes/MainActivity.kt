@@ -2,6 +2,7 @@ package com.et.segmev.basicnotes
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     var adapter: CustomNotesAdapter? = null
     var lastDeletedNote: Note? = null
     var orderByAsc = false
+    var toggleButtonIsChecked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +44,8 @@ class MainActivity : AppCompatActivity() {
                 return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
             }
 
-            override fun onMove(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?, target: RecyclerView.ViewHolder?): Boolean {
+            override fun onMove(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?,
+                                target: RecyclerView.ViewHolder?): Boolean {
                 return false
             }
 
@@ -52,23 +55,36 @@ class MainActivity : AppCompatActivity() {
                 lastDeletedNote = adapter?.returnNote(viewHolder?.adapterPosition!!)!!
                 Toast.makeText(this@MainActivity, "Note deleted.", Toast.LENGTH_LONG).show()
                 adapter?.updateData(dbHandler.findAllNotes(orderByAsc), lastDeletedNote)
-                autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
+                autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity,
+                        android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
                 invalidateOptionsMenu()
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeController)
         itemTouchHelper.attachToRecyclerView(rv)
 
-        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
+        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity,
+                android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
         autoCompleteTextView.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                adapter?.updateData(dbHandler.findFilteredNotes(p0?.toString()!!, toggleSearch.isChecked, orderByAsc), lastDeletedNote)
+                adapter?.updateData(dbHandler.findFilteredNotes(p0?.toString()!!,
+                        toggleButtonIsChecked, orderByAsc), lastDeletedNote)
             }
         })
-        toggleSearch.setOnCheckedChangeListener {
-            _, isChecked -> adapter?.updateData(dbHandler.findFilteredNotes(autoCompleteTextView.text.toString(), isChecked, orderByAsc), lastDeletedNote)
+        toggleButton.setOnClickListener {
+            toggleButtonIsChecked = !toggleButtonIsChecked
+            if (toggleButtonIsChecked) {
+                toggleButton.text = getString(R.string.everywhere)
+                toggleButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+            }
+            else {
+                toggleButton.text = getString(R.string.in_titles_only)
+                toggleButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            }
+            adapter?.updateData(dbHandler.findFilteredNotes(autoCompleteTextView.text.toString(),
+                    toggleButtonIsChecked, orderByAsc), lastDeletedNote)
         }
     }
 
@@ -81,7 +97,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         menu.getItem(0).isEnabled = lastDeletedNote != null
-        menu.getItem(1).title = if (!orderByAsc) getString(R.string.lest_recent_first_menuitem) else getString(R.string.most_recent_first_menuitem)
+        menu.getItem(1).title = if (!orderByAsc)
+            getString(R.string.lest_recent_first_menuitem)
+        else
+            getString(R.string.most_recent_first_menuitem)
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -92,7 +111,8 @@ class MainActivity : AppCompatActivity() {
                     dbHandler.addNote(lastDeletedNote!!)
                 lastDeletedNote = null
                 adapter?.updateData(dbHandler.findAllNotes(orderByAsc), lastDeletedNote)
-                Toast.makeText(this@MainActivity, getString(R.string.note_restored_toast), Toast.LENGTH_LONG).show()
+                Toast.makeText(this@MainActivity, getString(R.string.note_restored_toast),
+                        Toast.LENGTH_LONG).show()
                 invalidateOptionsMenu()
             }
             84 -> {
@@ -101,19 +121,22 @@ class MainActivity : AppCompatActivity() {
                 adapter?.updateData(dbHandler.findAllNotes(orderByAsc), lastDeletedNote)
             }
         }
-        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
+        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity,
+                android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
         return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
         super.onResume()
-        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
+        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity,
+                android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
         adapter?.updateData(dbHandler.findAllNotes(orderByAsc), lastDeletedNote)
     }
 
     override fun onRestart() {
         super.onRestart()
-        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
+        autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity,
+                android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
         adapter?.updateData(dbHandler.findAllNotes(orderByAsc), lastDeletedNote)
     }
 
