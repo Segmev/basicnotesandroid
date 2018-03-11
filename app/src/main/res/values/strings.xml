@@ -14,4 +14,5 @@
     <string name="note_restored_toast">Note restored</string>
     <string name="editnote_title">Note information</string>
     <string name="mainactivity_title">Notes List</string>
+    <string name="no_notes_to_display">No notes to display</string>
 </resources>
