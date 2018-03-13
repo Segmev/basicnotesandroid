@@ -19,6 +19,10 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private val ADD_NOTE_CODE = 1
+
+    private val MOST_RECENT_MENUITEM_ID = 0
+    private val UNDO_MENUITEM_ID = 1
+
     val dbHandler: MyDBHandler = MyDBHandler(this, null)
     var adapter: CustomNotesAdapter? = null
     var lastDeletedNote: Note? = null
@@ -36,6 +40,13 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.title = getString(R.string.mainactivity_title)
 
         val rv = findViewById<RecyclerView>(R.id.recyclerView)
+
+        notesListInit(rv)
+        cardControlInit(rv)
+        searchBarInit()
+    }
+
+    private fun notesListInit(rv: RecyclerView) {
         rv.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
 
         adapter = CustomNotesAdapter(dbHandler.findAllNotes(true))
@@ -45,7 +56,9 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("isNewNote", true)
             startActivityForResult(intent, ADD_NOTE_CODE)
         }
+    }
 
+    private fun cardControlInit(rv: RecyclerView) {
         val swipeController: ItemTouchHelper.Callback = object : ItemTouchHelper.Callback() {
             override fun getMovementFlags(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?): Int {
                 return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
@@ -69,7 +82,9 @@ class MainActivity : AppCompatActivity() {
         }
         val itemTouchHelper = ItemTouchHelper(swipeController)
         itemTouchHelper.attachToRecyclerView(rv)
+    }
 
+    private fun searchBarInit() {
         autoCompleteTextView.setAdapter(ArrayAdapter<String>(this@MainActivity,
                 android.R.layout.simple_dropdown_item_1line, dbHandler.getAllTitles()))
         autoCompleteTextView.addTextChangedListener(object: TextWatcher {
@@ -84,8 +99,7 @@ class MainActivity : AppCompatActivity() {
             if (toggleButtonIsChecked) {
                 toggleButton.text = getString(R.string.everywhere)
                 toggleButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
-            }
-            else {
+            } else {
                 toggleButton.text = getString(R.string.in_titles_only)
                 toggleButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             }
@@ -95,8 +109,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val menuItem = menu.add(Menu.NONE, 42, Menu.NONE, getString(R.string.undo_menuitem))
-        menu.add(Menu.NONE, 84, Menu.NONE, getString(R.string.most_recent_first_menuitem))
+        val menuItem = menu.add(Menu.NONE, UNDO_MENUITEM_ID, Menu.NONE, getString(R.string.undo_menuitem))
+        menu.add(Menu.NONE, MOST_RECENT_MENUITEM_ID, Menu.NONE, getString(R.string.most_recent_first_menuitem))
         menuItem.isEnabled = false
         return true
     }
@@ -112,7 +126,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            42 -> {
+            UNDO_MENUITEM_ID -> {
                 if (lastDeletedNote != null)
                     dbHandler.addNote(lastDeletedNote!!)
                 lastDeletedNote = null
@@ -121,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_LONG).show()
                 invalidateOptionsMenu()
             }
-            84 -> {
+            MOST_RECENT_MENUITEM_ID -> {
                 orderByAsc = !orderByAsc
                 invalidateOptionsMenu()
                 updateNoteList(dbHandler.findAllNotes(orderByAsc))

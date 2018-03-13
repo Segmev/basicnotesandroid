@@ -50,9 +50,11 @@ class EditNoteActivity : AppCompatActivity() {
             if (setResult())
                 finish()
             else
-                Toast.makeText(this@EditNoteActivity, "A note already exist with this title.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@EditNoteActivity,
+                        "A note already exist with this title.", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this@EditNoteActivity, "You must write a title.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@EditNoteActivity,
+                    "You must write a title.", Toast.LENGTH_SHORT).show()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -64,7 +66,12 @@ class EditNoteActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (backPressedOnce || (noteTitle.text.isEmpty() && noteInfo.text.isEmpty())) {
+        if (backPressedOnce
+                || (noteTitle.text.isEmpty() && noteInfo.text.isEmpty())
+                || (!isNewNote
+                        && noteTitle.text.toString() == note.title
+                        && noteInfo.text.toString() == note.info)
+        ) {
             super.onBackPressed()
             finish()
             return
